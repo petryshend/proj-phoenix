@@ -8,14 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Add build, lint, test, and run commands here as the project is set up. For example:
-
 ```
-npm install       # install dependencies
-npm run build     # build
-npm run lint      # lint
-npm test          # run all tests
-npm test -- path/to/file.test.ts  # run a single test file
+composer install                                      # install dependencies
+php bin/phpunit                                       # run all tests
+php bin/phpunit tests/Entity/TodoTest.php             # run a single test file
+php bin/console doctrine:migrations:migrate           # run database migrations
+php -S localhost:8000 -t public/                      # start dev server
 ```
 
 ## Architecture
