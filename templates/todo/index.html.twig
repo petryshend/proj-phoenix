@@ -5,34 +5,34 @@
 {% block body %}
 <h1>Todo List</h1>
 
-<form action="{{ path('todo_new') }}" method="POST" style="display: flex; gap: 0.5rem;">
-    <input type="text" name="title" placeholder="New todo..." required style="flex: 1; margin-bottom: 0;">
-    <button type="submit" style="width: auto;">Add</button>
+<form action="{{ path('todo_new') }}" method="POST" class="add-form">
+    <input type="text" name="title" placeholder="New todo..." required class="add-form__input">
+    <button type="submit" class="add-form__button">Add</button>
 </form>
 
 {% if todos is empty %}
     <p><em>No todos yet. Add one above!</em></p>
 {% else %}
-    <ul style="list-style: none; padding: 0; margin-top: 1rem;">
+    <ul class="todo-list">
         {% for todo in todos %}
-            <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--pico-muted-border-color);">
-                <span style="flex: 1;">
-                    <span style="{{ todo.done ? 'text-decoration: line-through; color: var(--pico-muted-color);' : '' }}">
+            <li class="todo-item">
+                <span class="todo-content">
+                    <span class="{{ todo.done ? 'todo-title--done' : '' }}">
                         {{ todo.title }}
                     </span>
                     <br>
-                    <small style="color: var(--pico-muted-color);">
+                    <small class="todo-meta">
                         Created: {{ todo.createdAt|date('d M Y, H:i') }}
                         {% if todo.doneAt %}· Done: {{ todo.doneAt|date('d M Y, H:i') }}{% endif %}
                     </small>
                 </span>
-                <form action="{{ path('todo_toggle', {id: todo.id}) }}" method="POST" style="margin: 0;">
-                    <button type="submit" class="outline" style="padding: 0.25rem 0.6rem;">
+                <form action="{{ path('todo_toggle', {id: todo.id}) }}" method="POST" class="todo-action-form">
+                    <button type="submit" class="outline todo-action-btn">
                         {{ todo.done ? '↩' : '✓' }}
                     </button>
                 </form>
-                <form action="{{ path('todo_delete', {id: todo.id}) }}" method="POST" style="margin: 0;">
-                    <button type="submit" class="outline secondary" style="padding: 0.25rem 0.6rem;">✕</button>
+                <form action="{{ path('todo_delete', {id: todo.id}) }}" method="POST" class="todo-action-form">
+                    <button type="submit" class="outline secondary todo-action-btn">✕</button>
                 </form>
             </li>
         {% endfor %}

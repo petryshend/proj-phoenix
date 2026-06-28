@@ -21,3 +21,9 @@ npm test -- path/to/file.test.ts  # run a single test file
 ## Architecture
 
 Document the high-level structure here once the codebase has meaningful content.
+
+## Styling
+
+- Do not use inline `style=""` attributes in Twig templates.
+- All styles go in `public/css/app.css` using BEM-style class names.
+- Pico.css is loaded from CDN and provides the base design system; `app.css` layers project-specific styles on top.
