@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Todo List{% endblock %}
+
+{% block body %}
+<h1>Todo List</h1>
+<ul>
+    {% for todo in todos %}
+        <li style="{{ todo.done ? 'text-decoration: line-through; color: #888;' : '' }}">
+            {{ todo.title }}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
