@@ -16,8 +16,15 @@
     <ul style="list-style: none; padding: 0; margin-top: 1rem;">
         {% for todo in todos %}
             <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--pico-muted-border-color);">
-                <span style="flex: 1; {{ todo.done ? 'text-decoration: line-through; color: var(--pico-muted-color);' : '' }}">
-                    {{ todo.title }}
+                <span style="flex: 1;">
+                    <span style="{{ todo.done ? 'text-decoration: line-through; color: var(--pico-muted-color);' : '' }}">
+                        {{ todo.title }}
+                    </span>
+                    <br>
+                    <small style="color: var(--pico-muted-color);">
+                        Created: {{ todo.createdAt|date('d M Y, H:i') }}
+                        {% if todo.doneAt %}· Done: {{ todo.doneAt|date('d M Y, H:i') }}{% endif %}
+                    </small>
                 </span>
                 <form action="{{ path('todo_toggle', {id: todo.id}) }}" method="POST" style="margin: 0;">
                     <button type="submit" class="outline" style="padding: 0.25rem 0.6rem;">

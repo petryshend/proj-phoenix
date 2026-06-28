@@ -19,9 +19,16 @@ class Todo
     #[ORM\Column]
     private bool $done = false;
 
+    #[ORM\Column]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $doneAt = null;
+
     public function __construct(string $title)
     {
         $this->title = $title;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -39,8 +46,19 @@ class Todo
         return $this->done;
     }
 
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getDoneAt(): ?\DateTimeImmutable
+    {
+        return $this->doneAt;
+    }
+
     public function toggle(): void
     {
         $this->done = !$this->done;
+        $this->doneAt = $this->done ? new \DateTimeImmutable() : null;
     }
 }
