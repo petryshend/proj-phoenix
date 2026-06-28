@@ -19,7 +19,7 @@ class TodoController extends AbstractController
         private readonly TodoRepository $todoRepository,
     ) {}
 
-    #[Route('/todo', name: 'todo_index', methods: ['GET'])]
+    #[Route('/', name: 'todo_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
         $total = $this->todoRepository->count([]);
