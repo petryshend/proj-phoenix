@@ -15,4 +15,22 @@ class TodoRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Todo::class);
     }
+
+    /** @return Todo[] */
+    public function findAllSorted(): array
+    {
+        $pending = $this->createQueryBuilder('t')
+            ->where('t.done = false')
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $done = $this->createQueryBuilder('t')
+            ->where('t.done = true')
+            ->orderBy('t.doneAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return [...$pending, ...$done];
+    }
 }
