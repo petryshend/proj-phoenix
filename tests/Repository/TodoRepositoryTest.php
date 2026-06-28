@@ -61,6 +61,35 @@ class TodoRepositoryTest extends KernelTestCase
         $this->assertSame($doneFirst->getId(), $results[2]->getId());
     }
 
+    public function testFindSortedPageReturnsOnlyRequestedPageSize(): void
+    {
+        for ($i = 1; $i <= 7; $i++) {
+            $this->createTodo("Task $i", new \DateTimeImmutable("2026-01-0$i"));
+        }
+
+        $results = $this->repository->findSortedPage(1, 5);
+
+        $this->assertCount(5, $results);
+    }
+
+    public function testFindSortedPagePreservesGlobalOrderAcrossPages(): void
+    {
+        for ($i = 1; $i <= 7; $i++) {
+            $this->createTodo("Task $i", new \DateTimeImmutable("2026-01-0$i"));
+        }
+
+        $all = $this->repository->findAllSorted();
+        $combined = [
+            ...$this->repository->findSortedPage(1, 5),
+            ...$this->repository->findSortedPage(2, 5),
+        ];
+
+        $this->assertSame(
+            array_map(fn ($t) => $t->getId(), $all),
+            array_map(fn ($t) => $t->getId(), $combined),
+        );
+    }
+
     private function createTodo(
         string $title,
         \DateTimeImmutable $createdAt,

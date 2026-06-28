@@ -12,16 +12,24 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TodoController extends AbstractController
 {
+    private const PER_PAGE = 5;
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TodoRepository $todoRepository,
     ) {}
 
     #[Route('/todo', name: 'todo_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $total = $this->todoRepository->count([]);
+        $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
+        $page = min(max(1, $request->query->getInt('page', 1)), $totalPages);
+
         return $this->render('todo/index.html.twig', [
-            'todos' => $this->todoRepository->findAllSorted(),
+            'todos' => $this->todoRepository->findSortedPage($page, self::PER_PAGE),
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
         ]);
     }
 
