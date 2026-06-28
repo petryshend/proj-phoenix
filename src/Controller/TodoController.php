@@ -33,6 +33,7 @@ class TodoController extends AbstractController
         if ($title !== '') {
             $this->em->persist(new Todo($title));
             $this->em->flush();
+            $this->addFlash('success', 'Todo added.');
         }
 
         return $this->redirectToRoute('todo_index');
@@ -43,6 +44,7 @@ class TodoController extends AbstractController
     {
         $todo->toggle();
         $this->em->flush();
+        $this->addFlash('success', $todo->isDone() ? 'Marked as done.' : 'Marked as pending.');
 
         return $this->redirectToRoute('todo_index');
     }
@@ -52,6 +54,7 @@ class TodoController extends AbstractController
     {
         $this->em->remove($todo);
         $this->em->flush();
+        $this->addFlash('success', 'Todo deleted.');
 
         return $this->redirectToRoute('todo_index');
     }
