@@ -3,6 +3,26 @@
     margin-bottom: 1rem;
 }
 
+.todo-nav {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.todo-nav__link {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    text-decoration: none;
+}
+
+.todo-nav__link--active {
+    background: var(--pico-primary-background);
+    border-color: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
+}
+
 .add-form {
     display: flex;
     gap: 0.5rem;

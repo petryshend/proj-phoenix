@@ -1,9 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Todo List{% endblock %}
+{% block title %}{{ heading }} Todos{% endblock %}
 
 {% block body %}
 <h1>Todo List</h1>
+
+<nav class="todo-nav">
+    <a href="{{ path('todo_index') }}"
+       class="todo-nav__link {{ route == 'todo_index' ? 'todo-nav__link--active' : '' }}"
+       {{ route == 'todo_index' ? 'aria-current="page"' : '' }}>Active</a>
+    <a href="{{ path('todo_done') }}"
+       class="todo-nav__link {{ route == 'todo_done' ? 'todo-nav__link--active' : '' }}"
+       {{ route == 'todo_done' ? 'aria-current="page"' : '' }}>Done</a>
+</nav>
 
 <form action="{{ path('todo_new') }}" method="POST" class="add-form">
     <input type="text" name="title" placeholder="New todo..." required class="add-form__input">
@@ -11,7 +20,7 @@
 </form>
 
 {% if todos is empty %}
-    <p><em>No todos yet. Add one above!</em></p>
+    <p><em>{{ route == 'todo_done' ? 'Nothing completed yet.' : 'No active todos. Add one above!' }}</em></p>
 {% else %}
     <ul class="todo-list">
         {% for todo in todos %}
@@ -41,15 +50,15 @@
     {% if totalPages > 1 %}
         <nav class="pagination">
             {% if currentPage > 1 %}
-                <a href="{{ path('todo_index', {page: currentPage - 1}) }}" class="pagination__link">‹ Prev</a>
+                <a href="{{ path(route, {page: currentPage - 1}) }}" class="pagination__link">‹ Prev</a>
             {% endif %}
             {% for p in 1..totalPages %}
-                <a href="{{ path('todo_index', {page: p}) }}"
+                <a href="{{ path(route, {page: p}) }}"
                    class="pagination__link {{ p == currentPage ? 'pagination__link--active' : '' }}"
                    {{ p == currentPage ? 'aria-current="page"' : '' }}>{{ p }}</a>
             {% endfor %}
             {% if currentPage < totalPages %}
-                <a href="{{ path('todo_index', {page: currentPage + 1}) }}" class="pagination__link">Next ›</a>
+                <a href="{{ path(route, {page: currentPage + 1}) }}" class="pagination__link">Next ›</a>
             {% endif %}
         </nav>
     {% endif %}

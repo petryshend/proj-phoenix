@@ -18,15 +18,9 @@ class TodoRepository extends ServiceEntityRepository
     }
 
     /** @return Todo[] */
-    public function findAllSorted(): array
+    public function findByDoneSortedPage(bool $done, int $page, int $perPage): array
     {
-        return $this->createSortedQueryBuilder()->getQuery()->getResult();
-    }
-
-    /** @return Todo[] */
-    public function findSortedPage(int $page, int $perPage): array
-    {
-        return $this->createSortedQueryBuilder()
+        return $this->createByDoneQueryBuilder($done)
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
             ->getQuery()
@@ -34,15 +28,14 @@ class TodoRepository extends ServiceEntityRepository
     }
 
     /**
-     * Pending (done=false) items first, then done items; within each group the
-     * most recent activity first. sortDate = doneAt for done items, createdAt
-     * for pending items.
+     * Items filtered by their done state, most recent first: pending items are
+     * ordered by createdAt, done items by doneAt.
      */
-    private function createSortedQueryBuilder(): QueryBuilder
+    private function createByDoneQueryBuilder(bool $done): QueryBuilder
     {
         return $this->createQueryBuilder('t')
-            ->addSelect('CASE WHEN t.done = true THEN t.doneAt ELSE t.createdAt END AS HIDDEN sortDate')
-            ->orderBy('t.done', 'ASC')
-            ->addOrderBy('sortDate', 'DESC');
+            ->andWhere('t.done = :done')
+            ->setParameter('done', $done)
+            ->orderBy($done ? 't.doneAt' : 't.createdAt', 'DESC');
     }
 }

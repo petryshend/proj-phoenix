@@ -24,15 +24,26 @@ class TodoRepositoryTest extends KernelTestCase
         $this->repository = $this->em->getRepository(Todo::class);
     }
 
-    public function testPendingItemsAppearBeforeDoneItems(): void
+    public function testActivePageReturnsOnlyPendingItems(): void
     {
-        $done = $this->createTodo('Done task', new \DateTimeImmutable('2026-01-03'), true, new \DateTimeImmutable('2026-01-04'));
         $pending = $this->createTodo('Pending task', new \DateTimeImmutable('2026-01-01'));
+        $this->createTodo('Done task', new \DateTimeImmutable('2026-01-03'), true, new \DateTimeImmutable('2026-01-04'));
 
-        $results = $this->repository->findAllSorted();
+        $results = $this->repository->findByDoneSortedPage(false, 1, 5);
 
+        $this->assertCount(1, $results);
         $this->assertSame($pending->getId(), $results[0]->getId());
-        $this->assertSame($done->getId(), $results[1]->getId());
+    }
+
+    public function testDonePageReturnsOnlyDoneItems(): void
+    {
+        $this->createTodo('Pending task', new \DateTimeImmutable('2026-01-01'));
+        $done = $this->createTodo('Done task', new \DateTimeImmutable('2026-01-03'), true, new \DateTimeImmutable('2026-01-04'));
+
+        $results = $this->repository->findByDoneSortedPage(true, 1, 5);
+
+        $this->assertCount(1, $results);
+        $this->assertSame($done->getId(), $results[0]->getId());
     }
 
     public function testPendingItemsSortedByCreatedAtDescending(): void
@@ -41,7 +52,7 @@ class TodoRepositoryTest extends KernelTestCase
         $newer = $this->createTodo('Newer task', new \DateTimeImmutable('2026-01-03'));
         $middle = $this->createTodo('Middle task', new \DateTimeImmutable('2026-01-02'));
 
-        $results = $this->repository->findAllSorted();
+        $results = $this->repository->findByDoneSortedPage(false, 1, 5);
 
         $this->assertSame($newer->getId(), $results[0]->getId());
         $this->assertSame($middle->getId(), $results[1]->getId());
@@ -54,40 +65,22 @@ class TodoRepositoryTest extends KernelTestCase
         $doneLast = $this->createTodo('Done last', new \DateTimeImmutable('2026-01-01'), true, new \DateTimeImmutable('2026-01-04'));
         $doneMiddle = $this->createTodo('Done middle', new \DateTimeImmutable('2026-01-01'), true, new \DateTimeImmutable('2026-01-03'));
 
-        $results = $this->repository->findAllSorted();
+        $results = $this->repository->findByDoneSortedPage(true, 1, 5);
 
         $this->assertSame($doneLast->getId(), $results[0]->getId());
         $this->assertSame($doneMiddle->getId(), $results[1]->getId());
         $this->assertSame($doneFirst->getId(), $results[2]->getId());
     }
 
-    public function testFindSortedPageReturnsOnlyRequestedPageSize(): void
+    public function testFindByDoneSortedPageReturnsOnlyRequestedPageSize(): void
     {
         for ($i = 1; $i <= 7; $i++) {
             $this->createTodo("Task $i", new \DateTimeImmutable("2026-01-0$i"));
         }
 
-        $results = $this->repository->findSortedPage(1, 5);
+        $results = $this->repository->findByDoneSortedPage(false, 1, 5);
 
         $this->assertCount(5, $results);
-    }
-
-    public function testFindSortedPagePreservesGlobalOrderAcrossPages(): void
-    {
-        for ($i = 1; $i <= 7; $i++) {
-            $this->createTodo("Task $i", new \DateTimeImmutable("2026-01-0$i"));
-        }
-
-        $all = $this->repository->findAllSorted();
-        $combined = [
-            ...$this->repository->findSortedPage(1, 5),
-            ...$this->repository->findSortedPage(2, 5),
-        ];
-
-        $this->assertSame(
-            array_map(fn ($t) => $t->getId(), $all),
-            array_map(fn ($t) => $t->getId(), $combined),
-        );
     }
 
     private function createTodo(

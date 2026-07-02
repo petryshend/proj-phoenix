@@ -22,14 +22,27 @@ class TodoController extends AbstractController
     #[Route('/', name: 'todo_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $total = $this->todoRepository->count([]);
+        return $this->renderList($request, done: false, route: 'todo_index', heading: 'Active');
+    }
+
+    #[Route('/done', name: 'todo_done', methods: ['GET'])]
+    public function done(Request $request): Response
+    {
+        return $this->renderList($request, done: true, route: 'todo_done', heading: 'Done');
+    }
+
+    private function renderList(Request $request, bool $done, string $route, string $heading): Response
+    {
+        $total = $this->todoRepository->count(['done' => $done]);
         $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min(max(1, $request->query->getInt('page', 1)), $totalPages);
 
-        return $this->render('todo/index.html.twig', [
-            'todos' => $this->todoRepository->findSortedPage($page, self::PER_PAGE),
+        return $this->render('todo/list.html.twig', [
+            'todos' => $this->todoRepository->findByDoneSortedPage($done, $page, self::PER_PAGE),
             'currentPage' => $page,
             'totalPages' => $totalPages,
+            'route' => $route,
+            'heading' => $heading,
         ]);
     }
 
