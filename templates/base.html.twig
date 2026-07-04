@@ -20,6 +20,18 @@
         {% endif %}
     </head>
     <body>
+        <header class="container">
+            <nav class="app-nav">
+                <a href="{{ path('todo_index') }}" class="app-nav__brand">Todos</a>
+                {% if app.user %}
+                    <span class="app-nav__user">{{ app.user.userIdentifier }}</span>
+                    <a href="{{ path('app_logout') }}" class="app-nav__link">Log out</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="app-nav__link">Sign in</a>
+                    <a href="{{ path('app_register') }}" class="app-nav__link">Register</a>
+                {% endif %}
+            </nav>
+        </header>
         <main class="container">
             {% for type, messages in app.flashes %}
                 {% for message in messages %}

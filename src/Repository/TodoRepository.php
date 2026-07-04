@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Todo;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,24 +19,34 @@ class TodoRepository extends ServiceEntityRepository
     }
 
     /** @return Todo[] */
-    public function findByDoneSortedPage(bool $done, int $page, int $perPage): array
+    public function findByDoneSortedPage(bool $done, User $owner, int $page, int $perPage): array
     {
-        return $this->createByDoneQueryBuilder($done)
+        return $this->createByDoneQueryBuilder($done, $owner)
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
             ->getQuery()
             ->getResult();
     }
 
+    public function countByDone(bool $done, User $owner): int
+    {
+        return (int) $this->createByDoneQueryBuilder($done, $owner)
+            ->select('COUNT(t.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     /**
-     * Items filtered by their done state, most recent first: pending items are
-     * ordered by createdAt, done items by doneAt.
+     * Items owned by the given user, filtered by their done state, most recent
+     * first: pending items are ordered by createdAt, done items by doneAt.
      */
-    private function createByDoneQueryBuilder(bool $done): QueryBuilder
+    private function createByDoneQueryBuilder(bool $done, User $owner): QueryBuilder
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.done = :done')
+            ->andWhere('t.owner = :owner')
             ->setParameter('done', $done)
+            ->setParameter('owner', $owner)
             ->orderBy($done ? 't.doneAt' : 't.createdAt', 'DESC');
     }
 }

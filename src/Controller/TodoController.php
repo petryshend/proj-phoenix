@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Todo;
+use App\Entity\User;
 use App\Repository\TodoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,12 +34,14 @@ class TodoController extends AbstractController
 
     private function renderList(Request $request, bool $done, string $route, string $heading): Response
     {
-        $total = $this->todoRepository->count(['done' => $done]);
+        $user = $this->getCurrentUser();
+
+        $total = $this->todoRepository->countByDone($done, $user);
         $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min(max(1, $request->query->getInt('page', 1)), $totalPages);
 
         return $this->render('todo/list.html.twig', [
-            'todos' => $this->todoRepository->findByDoneSortedPage($done, $page, self::PER_PAGE),
+            'todos' => $this->todoRepository->findByDoneSortedPage($done, $user, $page, self::PER_PAGE),
             'currentPage' => $page,
             'totalPages' => $totalPages,
             'route' => $route,
@@ -52,7 +55,7 @@ class TodoController extends AbstractController
         $title = trim((string) $request->request->get('title', ''));
 
         if ($title !== '') {
-            $this->em->persist(new Todo($title));
+            $this->em->persist(new Todo($title, $this->getCurrentUser()));
             $this->em->flush();
             $this->addFlash('success', 'Todo added.');
         }
@@ -63,6 +66,8 @@ class TodoController extends AbstractController
     #[Route('/todo/{id}/toggle', name: 'todo_toggle', methods: ['POST'])]
     public function toggle(Todo $todo): Response
     {
+        $this->assertOwned($todo);
+
         $todo->toggle();
         $this->em->flush();
         $this->addFlash('success', $todo->isDone() ? 'Marked as done.' : 'Marked as pending.');
@@ -73,10 +78,27 @@ class TodoController extends AbstractController
     #[Route('/todo/{id}/delete', name: 'todo_delete', methods: ['POST'])]
     public function delete(Todo $todo): Response
     {
+        $this->assertOwned($todo);
+
         $this->em->remove($todo);
         $this->em->flush();
         $this->addFlash('success', 'Todo deleted.');
 
         return $this->redirectToRoute('todo_index');
+    }
+
+    private function getCurrentUser(): User
+    {
+        $user = $this->getUser();
+        \assert($user instanceof User);
+
+        return $user;
+    }
+
+    private function assertOwned(Todo $todo): void
+    {
+        if ($todo->getOwner() !== $this->getCurrentUser()) {
+            throw $this->createAccessDeniedException('You do not own this todo.');
+        }
     }
 }

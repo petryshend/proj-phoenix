@@ -25,9 +25,14 @@ class Todo
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $doneAt = null;
 
-    public function __construct(string $title)
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $owner;
+
+    public function __construct(string $title, User $owner)
     {
         $this->title = $title;
+        $this->owner = $owner;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -54,6 +59,11 @@ class Todo
     public function getDoneAt(): ?\DateTimeImmutable
     {
         return $this->doneAt;
+    }
+
+    public function getOwner(): User
+    {
+        return $this->owner;
     }
 
     public function toggle(): void

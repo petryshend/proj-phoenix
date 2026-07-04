@@ -3,20 +3,29 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Todo;
+use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
 class TodoTest extends TestCase
 {
     public function testConstructorSetsTitle(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
 
         $this->assertSame('Buy groceries', $todo->getTitle());
     }
 
+    public function testConstructorSetsOwner(): void
+    {
+        $owner = $this->newUser();
+        $todo = new Todo('Buy groceries', $owner);
+
+        $this->assertSame($owner, $todo->getOwner());
+    }
+
     public function testConstructorSetsDoneToFalse(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
 
         $this->assertFalse($todo->isDone());
     }
@@ -24,7 +33,7 @@ class TodoTest extends TestCase
     public function testConstructorSetsCreatedAt(): void
     {
         $before = new \DateTimeImmutable();
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
         $after = new \DateTimeImmutable();
 
         $this->assertGreaterThanOrEqual($before, $todo->getCreatedAt());
@@ -33,14 +42,14 @@ class TodoTest extends TestCase
 
     public function testConstructorSetsDoneAtToNull(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
 
         $this->assertNull($todo->getDoneAt());
     }
 
     public function testToggleMarksTodoAsDone(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
         $todo->toggle();
 
         $this->assertTrue($todo->isDone());
@@ -48,7 +57,7 @@ class TodoTest extends TestCase
 
     public function testToggleSetsDateWhenDone(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
         $todo->toggle();
 
         $this->assertInstanceOf(\DateTimeImmutable::class, $todo->getDoneAt());
@@ -56,7 +65,7 @@ class TodoTest extends TestCase
 
     public function testToggleMarksTodoAsPending(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
         $todo->toggle();
         $todo->toggle();
 
@@ -65,10 +74,23 @@ class TodoTest extends TestCase
 
     public function testToggleClearsDoneAtWhenPending(): void
     {
-        $todo = new Todo('Buy groceries');
+        $todo = $this->newTodo('Buy groceries');
         $todo->toggle();
         $todo->toggle();
 
         $this->assertNull($todo->getDoneAt());
+    }
+
+    private function newTodo(string $title): Todo
+    {
+        return new Todo($title, $this->newUser());
+    }
+
+    private function newUser(): User
+    {
+        $user = new User();
+        $user->setEmail('owner@example.com');
+
+        return $user;
     }
 }

@@ -3,6 +3,49 @@
     margin-bottom: 1rem;
 }
 
+.app-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    margin-bottom: 1rem;
+}
+
+.app-nav__brand {
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: auto;
+}
+
+.app-nav__user {
+    color: var(--pico-muted-color);
+}
+
+.app-nav__link {
+    text-decoration: none;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 24rem;
+}
+
+.auth-form__label {
+    margin-top: 0.5rem;
+}
+
+.auth-form__button {
+    width: auto;
+    margin-top: 1rem;
+}
+
+.auth-switch {
+    margin-top: 1rem;
+}
+
 .todo-nav {
     display: flex;
     justify-content: flex-start;
