@@ -16,6 +16,7 @@
 
 <form action="{{ path('todo_new') }}" method="POST" class="add-form">
     <input type="text" name="title" placeholder="New todo..." required class="add-form__input">
+    <input type="hidden" name="_token" value="{{ csrf_token('todo_new') }}">
     <button type="submit" class="add-form__button">Add</button>
 </form>
 
@@ -36,11 +37,13 @@
                     </small>
                 </span>
                 <form action="{{ path('todo_toggle', {id: todo.id}) }}" method="POST" class="todo-action-form">
+                    <input type="hidden" name="_token" value="{{ csrf_token('todo_toggle') }}">
                     <button type="submit" class="outline todo-action-btn">
                         {{ todo.done ? '↩' : '✓' }}
                     </button>
                 </form>
                 <form action="{{ path('todo_delete', {id: todo.id}) }}" method="POST" class="todo-action-form">
+                    <input type="hidden" name="_token" value="{{ csrf_token('todo_delete') }}">
                     <button type="submit" class="outline secondary todo-action-btn">✕</button>
                 </form>
             </li>

@@ -1,0 +1,17 @@
+ - migrate to docker
+ - migrate to PostgreSQL
+ - deploy
+ - make it look better (styling)
+ - flash message pushes layout 
+ - migrate FE to react
+ - create API
+ - show counts next to tasks links in header
+
+
+ DONE: 
+ - remove default symfony page (/)
+ - enable symfony profiler
+ - show two lists: undone items on top and done on the bottom
+ - user authentication and split todos by user
+ - forms CSRF tokens
+

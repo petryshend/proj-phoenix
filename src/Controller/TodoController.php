@@ -52,6 +52,8 @@ class TodoController extends AbstractController
     #[Route('/todo/new', name: 'todo_new', methods: ['POST'])]
     public function new(Request $request): Response
     {
+        $this->assertCsrf($request, 'todo_new');
+
         $title = trim((string) $request->request->get('title', ''));
 
         if ($title !== '') {
@@ -64,8 +66,9 @@ class TodoController extends AbstractController
     }
 
     #[Route('/todo/{id}/toggle', name: 'todo_toggle', methods: ['POST'])]
-    public function toggle(Todo $todo): Response
+    public function toggle(Request $request, Todo $todo): Response
     {
+        $this->assertCsrf($request, 'todo_toggle');
         $this->assertOwned($todo);
 
         $todo->toggle();
@@ -76,8 +79,9 @@ class TodoController extends AbstractController
     }
 
     #[Route('/todo/{id}/delete', name: 'todo_delete', methods: ['POST'])]
-    public function delete(Todo $todo): Response
+    public function delete(Request $request, Todo $todo): Response
     {
+        $this->assertCsrf($request, 'todo_delete');
         $this->assertOwned($todo);
 
         $this->em->remove($todo);
@@ -99,6 +103,13 @@ class TodoController extends AbstractController
     {
         if ($todo->getOwner() !== $this->getCurrentUser()) {
             throw $this->createAccessDeniedException('You do not own this todo.');
+        }
+    }
+
+    private function assertCsrf(Request $request, string $id): void
+    {
+        if (!$this->isCsrfTokenValid($id, (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
         }
     }
 }
