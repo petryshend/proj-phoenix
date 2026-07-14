@@ -36,7 +36,9 @@ class TodoController extends AbstractController
     {
         $user = $this->getCurrentUser();
 
-        $total = $this->todoRepository->countByDone($done, $user);
+        $activeCount = $this->todoRepository->countByDone(false, $user);
+        $doneCount = $this->todoRepository->countByDone(true, $user);
+        $total = $done ? $doneCount : $activeCount;
         $totalPages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min(max(1, $request->query->getInt('page', 1)), $totalPages);
 
@@ -46,6 +48,8 @@ class TodoController extends AbstractController
             'totalPages' => $totalPages,
             'route' => $route,
             'heading' => $heading,
+            'activeCount' => $activeCount,
+            'doneCount' => $doneCount,
         ]);
     }
 
