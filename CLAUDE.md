@@ -18,6 +18,8 @@ docker compose up --build                              # start the whole app in 
 docker compose exec app php bin/phpunit                # run tests inside the container
 ```
 
+The app runs on PostgreSQL via the `db` Compose service; migrations are applied automatically on container start. The test suite (`php bin/phpunit`) uses SQLite in-memory, so it needs no database server. A non-Docker local run would need its own PostgreSQL (or a `.env.local` override of `DATABASE_URL`).
+
 ## Architecture
 
 Document the high-level structure here once the codebase has meaningful content.
