@@ -21,7 +21,9 @@ class TodoRepository extends ServiceEntityRepository
     /** @return Todo[] */
     public function findByDoneSortedPage(bool $done, User $owner, int $page, int $perPage): array
     {
+        // Most recent first: pending items by createdAt, done items by doneAt.
         return $this->createByDoneQueryBuilder($done, $owner)
+            ->orderBy($done ? 't.doneAt' : 't.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
             ->getQuery()
@@ -37,8 +39,9 @@ class TodoRepository extends ServiceEntityRepository
     }
 
     /**
-     * Items owned by the given user, filtered by their done state, most recent
-     * first: pending items are ordered by createdAt, done items by doneAt.
+     * Items owned by the given user, filtered by their done state. Ordering is
+     * left to callers: a COUNT() query must not carry an ORDER BY on a
+     * non-aggregated column, which PostgreSQL rejects.
      */
     private function createByDoneQueryBuilder(bool $done, User $owner): QueryBuilder
     {
@@ -46,7 +49,6 @@ class TodoRepository extends ServiceEntityRepository
             ->andWhere('t.done = :done')
             ->andWhere('t.owner = :owner')
             ->setParameter('done', $done)
-            ->setParameter('owner', $owner)
-            ->orderBy($done ? 't.doneAt' : 't.createdAt', 'DESC');
+            ->setParameter('owner', $owner);
     }
 }
