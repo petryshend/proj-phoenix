@@ -14,7 +14,7 @@ php bin/phpunit                                       # run all tests
 php bin/phpunit tests/Entity/TodoTest.php             # run a single test file
 php bin/console doctrine:migrations:migrate           # run database migrations
 php -S localhost:8000 -t public/                      # start dev server
-docker compose up --build                              # start the whole app in Docker (no local PHP/Composer needed)
+docker compose up --build                              # start the whole app in Docker (no local PHP/Composer needed), served by FrankenPHP
 docker compose exec app php bin/phpunit                # run tests inside the container
 ```
 
