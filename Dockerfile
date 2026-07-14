@@ -1,7 +1,8 @@
-FROM php:8.4-cli-alpine
+FROM dunglas/frankenphp:1-php8.4
 
-RUN apk add --no-cache sqlite-dev \
-    && docker-php-ext-install pdo pdo_sqlite
+RUN apt-get update && apt-get install -y --no-install-recommends libsqlite3-dev unzip \
+    && docker-php-ext-install pdo pdo_sqlite \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -12,6 +13,7 @@ RUN composer install --no-interaction --no-progress --no-scripts
 
 COPY . .
 
+COPY docker/Caddyfile /etc/caddy/Caddyfile
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
