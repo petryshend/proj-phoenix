@@ -1,4 +1,3 @@
- - use webserver service, not the built in php server
  - migrate to PostgreSQL
  - deploy
  - make it look better (styling)
@@ -15,3 +14,4 @@
  - forms CSRF tokens
  - show counts next to tasks links in header
  - migrate to docker
+ - use webserver service, not the built in php server
