@@ -5,7 +5,6 @@
  - flash message pushes layout 
  - migrate FE to react
  - create API
- - show counts next to tasks links in header
 
 
  DONE: 
@@ -14,4 +13,5 @@
  - show two lists: undone items on top and done on the bottom
  - user authentication and split todos by user
  - forms CSRF tokens
+ - show counts next to tasks links in header
 

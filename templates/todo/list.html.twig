@@ -8,10 +8,10 @@
 <nav class="todo-nav">
     <a href="{{ path('todo_index') }}"
        class="todo-nav__link {{ route == 'todo_index' ? 'todo-nav__link--active' : '' }}"
-       {{ route == 'todo_index' ? 'aria-current="page"' : '' }}>Active</a>
+       {{ route == 'todo_index' ? 'aria-current="page"' : '' }}>Active ({{ activeCount }})</a>
     <a href="{{ path('todo_done') }}"
        class="todo-nav__link {{ route == 'todo_done' ? 'todo-nav__link--active' : '' }}"
-       {{ route == 'todo_done' ? 'aria-current="page"' : '' }}>Done</a>
+       {{ route == 'todo_done' ? 'aria-current="page"' : '' }}>Done ({{ doneCount }})</a>
 </nav>
 
 <form action="{{ path('todo_new') }}" method="POST" class="add-form">
